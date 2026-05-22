@@ -2,25 +2,41 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-st.title("CSV Анализатор")
+# Set page title
+st.title("CSV Analyzer")
 
-uploaded_file = st.file_uploader("Загрузи CSV файл", type="csv")
+# File upload widget
+uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
 
 if uploaded_file is not None:
+    # Load data
     df = pd.read_csv(uploaded_file)
     
-    st.subheader("Данные")
+    # Display data table
+    st.subheader("Data")
     st.dataframe(df)
     
-    st.subheader("Статистика")
+    # Display statistics
+    st.subheader("Statistics")
     st.write(df.describe())
     
-    st.subheader("График")
+    # Display histogram
+    st.subheader("Visualization")
+    
+    # Get numeric columns only
     numeric_cols = df.select_dtypes(include='number').columns.tolist()
+    
     if numeric_cols:
-        col = st.selectbox("Выбери колонку", numeric_cols)
-        fig, ax = plt.subplots()
-        ax.hist(df[col], bins=20)
+        # Let user select column
+        col = st.selectbox("Select column to visualize", numeric_cols)
+        
+        # Create histogram
+        fig, ax = plt.subplots(figsize=(10, 5))
+        ax.hist(df[col], bins=20, edgecolor='black')
+        ax.set_title(f"Distribution of {col}")
+        ax.set_xlabel(col)
+        ax.set_ylabel("Frequency")
+        
         st.pyplot(fig)
     else:
-        st.write("Нет числовых колонок для графика")
+        st.write("No numeric columns found for visualization")
